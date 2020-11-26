@@ -11,7 +11,7 @@ int main(void)
     scanf("%s", s);
     printf("%s\n", s);
 
-    printf("Output : %s\n", s);
+    printf("Output : %s\n", result);
 
     return 0;
 }

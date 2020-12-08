@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "list.h"
+#include "link.h"
 
 int main(void)
 {

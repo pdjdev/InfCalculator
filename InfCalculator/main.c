@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "link.h"
+#include "calc.h"
 
 int main(void)
 {

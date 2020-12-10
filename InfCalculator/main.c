@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include "link.h"
-#include "calc.h"
-#include "task.h"
+#include "link.c"
+#include "calc.c"
+#include "task.c"
 
 int main(int argc, char* argv[]) {
 

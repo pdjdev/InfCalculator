@@ -42,9 +42,9 @@ int main(int argc, char* argv[]) {
     }
 
     exp_head = FixExpr(exp_head);
-    if (printlog) printf("Fixed Expression:\n"); print_link(exp_head); printf("\n\n");
+    if (printlog) { printf("Fixed Expression:\n"); print_link(exp_head); printf("\n\n"); }
     exp_head = PostFix(exp_head);
-    if (printlog) printf("PostFix:\n"); print_link(exp_head); printf("\n\n");
+    if (printlog) { printf("PostFix:\n"); print_link(exp_head); printf("\n\n"); }
 
     printf("Calculating...\n");
     if (printlog) printf("#\tOperand\t\tOperand\t\tOperator\n");

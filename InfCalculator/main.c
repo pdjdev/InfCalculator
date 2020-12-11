@@ -7,8 +7,8 @@
 #include "calc.c"
 #include "task.c"
 
-bool printlog = true;
-int calccount = 0;
+bool printlog = true;   // log 출력 여부
+int calccount = 0;      // log - 계산 횟수
 
 int main(int argc, char* argv[]) {
 

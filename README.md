@@ -8,6 +8,7 @@ Project for Introduction to System Programming
 |박동준|2020057501|
 |조건희|2020050419|
 |이은비|2020062324|
+|정유민|2020058268|
 
 ## Build
 ```

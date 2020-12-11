@@ -59,7 +59,7 @@ char ErrChk(LINK exp_head){
     LINK exp = exp_head;
 
     //중간부분 체크에 쓰일 변수 선언
-    char number = 1; // 숫자가 있으면 0
+    bool number = false; // 숫자가 있으면 true
     char spot = 0;
     unsigned long long left_bracket = 0; // 왼괄호
     unsigned long long right_bracket = 0; // 우괄
@@ -68,7 +68,7 @@ char ErrChk(LINK exp_head){
     if(!(exp->d == '(' || exp->d == '-' || (exp->d >= '0' && exp->d <= '9'))) errorcheck = -1;
 
     //맨 앞이 숫자이면 숫자 나왔다고 알려주기
-    if(exp->d>='0' && exp->d <='9') number = 0;
+    if(exp->d>='0' && exp->d <='9') number = true;
 
     //중간부분
     exp = exp_head;
@@ -79,7 +79,7 @@ char ErrChk(LINK exp_head){
         
         //숫자 하나에 .이 2개이면 에러 체크, 숫자 나왔는지 확인
         if((exp->d >= '0' && exp->d <= '9') || exp->d == '.'){
-            number = 0;
+            number = true;
             if(!spot && exp->d == '.') spot = 1;
             else if(spot && exp->d == '.') {errorcheck = -1; break;}
         }
@@ -118,11 +118,11 @@ char ErrChk(LINK exp_head){
 
         if(!(exp->d == ')' || (exp->d >= '0' && exp->d <= '9'))) errorcheck = -1;
         if(exp->d == ')') right_bracket++;
-        if(exp->d >= '0' && exp->d<='9') number = 0;
+        if(exp->d >= '0' && exp->d<='9') number = true;
     }
 
     //숫자가 없으면 에러 체크
-    if(number) errorcheck = -1;
+    if(!number) errorcheck = -1;
 
     //괄호 개수가 같지 않으면 에러 체크
     if(left_bracket != right_bracket) errorcheck = -1;

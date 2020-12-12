@@ -123,7 +123,7 @@ LINK Upzero_fill(LINK x, LINK y) {
     return zero;
 }
 
-void Downzero_fill(LINK x, LINK y){
+void Downzero_fill(LINK x, LINK y) {
     LINK a = last_link(x);
     LINK b = last_link(y);
     for(; a->d != '.'; a=a->prev);

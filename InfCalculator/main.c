@@ -34,9 +34,11 @@ int main(int argc, char* argv[]) {
 
     //에러가 체크되어 있으면 오류문구 출력 후 종료
     char errorcheck = ErrChk(exp_head);    
-    if(errorcheck){
+    if(errorcheck) {
         //오류 발생
-        printf("An error has occured: ");
+        printf("An error has occured: ");    
+        printf(ErrMsg(errorcheck));
+        printf(" (code %d) ", errorcheck);
         free_all(exp_head);
         exit(1);
     }

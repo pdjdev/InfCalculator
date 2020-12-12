@@ -7,7 +7,7 @@ LINK GetExpr(char *filename) {
 
     char input = getc(fq);
 
-    if(input=='\n'){
+    if(input=='\n') {
         printf("Error: Input file is empty or starts with a newline.\n");
         exit(0);
     }
@@ -16,7 +16,7 @@ LINK GetExpr(char *filename) {
     LINK exp = exp_head;
     
     //두번째 글자부터 입력 및 링크드리스트 넣기
-    while(input = getc(fq)){
+    while(input = getc(fq)) {
         // 개행문자 or end of file
         if(input == '\n' || input == EOF) break;
         LINK p = char_to_list(input);
@@ -29,10 +29,10 @@ LINK GetExpr(char *filename) {
     return exp_head;
 }
 
-LINK DelSpace(LINK exp_head){
+LINK DelSpace(LINK exp_head) {
     LINK exp = exp_head;
     LINK exp_x;
-    while(exp->next != NULL){
+    while(exp->next != NULL) {
         if(exp->d != ' ' && exp->d != '\n') break;
         exp_x = exp->next;
         exp->next->prev = NULL;
@@ -54,7 +54,7 @@ LINK DelSpace(LINK exp_head){
     return exp_head;
 } 
 
-char ErrChk(LINK exp_head){
+char ErrChk(LINK exp_head) {
     char errorcheck = 0;
     LINK exp = exp_head;
 
@@ -75,13 +75,13 @@ char ErrChk(LINK exp_head){
     while(exp->next != NULL){
 
         //에러가 체크되어 있으면 break
-        if(errorcheck == -1) break;
+        if(errorcheck < 0) break;
         
         //숫자 하나에 .이 2개이면 에러 체크, 숫자 나왔는지 확인
         if((exp->d >= '0' && exp->d <= '9') || exp->d == '.'){
             number = true;
             if(!spot && exp->d == '.') spot = 1;
-            else if(spot && exp->d == '.') {errorcheck = -1; break;}
+            else if(spot && exp->d == '.') {errorcheck = -2; break;}
         }
         else spot = 0;
         
@@ -90,20 +90,20 @@ char ErrChk(LINK exp_head){
         if(exp->d == ')') right_bracket ++;
 
         //우괄호가 더 많으면 에러체크
-        if(left_bracket < right_bracket) {errorcheck = -1; break;}
+        if(left_bracket < right_bracket) {errorcheck = -3; break;}
         
         //나오면 안되는 문자
         if(!(exp->d == '+' || exp->d == '-' || exp->d == '*' || 
-                    exp->d == '(' || exp->d == ')' || exp->d == '.' ||  (exp->d>='0'&&exp->d<='9'))){errorcheck = -1; break;}
+                    exp->d == '(' || exp->d == ')' || exp->d == '.' ||  (exp->d>='0'&&exp->d<='9'))){errorcheck = -4; break;}
         
         //연산자 다음에 나오면 안되는 문자
         if(exp->d == '+' || exp->d == '*' || exp->d == '-'){
-            if(!(exp->next->d == '(' || (exp->next->d>='0' && exp->next->d<='9'))) {errorcheck = -1; break;}
+            if(!(exp->next->d == '(' || (exp->next->d>='0' && exp->next->d<='9'))) {errorcheck = -5; break;}
         }
 
         if(exp->d == '('){
             if(!(exp->next->d == '('|| exp->next->d == '-' || 
-                        (exp->next->d>='0' && exp->next->d<='9'))) {errorcheck = -1; break;}
+                        (exp->next->d>='0' && exp->next->d<='9'))) {errorcheck = -6; break;}
         }
         /*if(exp->d == ')'){
             if(exp->next->d >= '0' && exp->next->d <='9') {errorcheck = -1; break;}
@@ -113,24 +113,63 @@ char ErrChk(LINK exp_head){
 
     // 마지막 글자로 나오면 안되는게 나오면 에러체크 및 괄호 세기 및 숫자 체크
     if(exp->prev != NULL){
-        if(!(exp->d == '+' || exp->d == '-' || exp->d == '/' || exp->d == '*' || 
-                    exp->d == '(' || exp->d == ')' || (exp->d>='0'&&exp->d<='9'))) errorcheck = -1;
+        if(!(exp->d == '+' || exp->d == '-' || exp->d == '*' || 
+                    exp->d == '(' || exp->d == ')' || (exp->d>='0'&&exp->d<='9'))) errorcheck = -7;
 
-        if(!(exp->d == ')' || (exp->d >= '0' && exp->d <= '9'))) errorcheck = -1;
+        if(!(exp->d == ')' || (exp->d >= '0' && exp->d <= '9'))) errorcheck = -8;
         if(exp->d == ')') right_bracket++;
         if(exp->d >= '0' && exp->d<='9') number = true;
     }
 
     //숫자가 없으면 에러 체크
-    if(!number) errorcheck = -1;
+    if(!number && !(errorcheck<0)) errorcheck = -9;
 
     //괄호 개수가 같지 않으면 에러 체크
-    if(left_bracket != right_bracket) errorcheck = -1;
+    if(left_bracket != right_bracket) errorcheck = -10;
 
     return errorcheck;
 }
 
-LINK FixExpr(LINK exp_head){
+char* ErrMsg(int errorcode) {
+    switch (errorcode)
+    {
+    case -1: // 맨 앞에 올바르지 않은 문자열이 있음
+        return "Invalid character at the beginning of the input";
+    
+    case -2: // 피연산자 하나에 소수점이 두개 이상 발견됨
+        return "More than one decimal point was found in an operand";
+        
+    case -3: // 우괄호가 더 많음
+        return "Right bracket outnumbers the left bracket in the expression";
+
+    case -4: // 올바르지 않은 문자가 포함되어 있음
+        return "Invalid character(s) in the expression (Only '+','-','*','(',')','.','0-9' are allowed)";
+
+    case -5: // 연산자 다음에 올바르지 않은 문자가 포함되어 있음
+        return "Invalid character(s) next to the operator (Only '(','0-9' are allowed)";
+
+    case -6: // 좌괄호 다음에 올바르지 않은 문자가 포함되어 있음
+        return "Invalid character(s) next to the left bracket (Only '(','-', '0-9' are allowed)";
+
+    case -7: // 올바르지 않은 문자가 포함되어 있음
+        return "Invalid character(s) in the expression (Only '+','-','*','(',')','.','0-9' are allowed)";
+    
+    case -8: // 식 끝에 올바르지 않은 문자가 포함되어 있음
+        return "Invalid character(s) at the end of the input (Only ')','0-9' are allowed)";
+    
+    case -9: // 피연산자 없음
+        return "No operand found";
+
+    case -10: // 괄호 수가 맞지 않음
+        return "Number of brackets mismatch";
+
+    default:
+        return "Unknown error";
+
+    }
+}
+
+LINK FixExpr(LINK exp_head) {
     LINK exp;
     // 맨 앞에 -가 나오는 경우, 맨 앞에 0 붙여주기   ( -   >   0- )
     if(exp_head->next != NULL && exp_head->d == '-'){
@@ -182,7 +221,7 @@ LINK FixExpr(LINK exp_head){
     // 마지막 피연산자에 .이 없었다면 . 추가
     LINK exp_last = last_link(exp_head);
     exp = exp_last;
-    if(!dcpt && exp->d>='0' && exp->d<='9'){
+    if(!dcpt && exp->d>='0' && exp->d<='9') {
         insert(exp,'.');
     }
 
@@ -190,7 +229,7 @@ LINK FixExpr(LINK exp_head){
 }
 
 // 연산자 우선순위 리턴
-int GetPriority(DATA d, int inStack){
+char GetPriority(DATA d, int inStack) {
     unsigned int priority = -1;
     switch(d){
         case '(' :
@@ -209,16 +248,16 @@ int GetPriority(DATA d, int inStack){
 }
 
 // 두 값중 우선순위 높음여부 비교
-bool isPrior(DATA d1, DATA d2){
+bool isPrior(DATA d1, DATA d2) {
     return (GetPriority(d1, 1) <= GetPriority(d2, 0));
 }
 
 // 피연산자인지 판별
-int isNum(LINK exp){
+bool isNum(LINK exp){
     LINK e = exp;
     LINK en = e->next;
-    if(en != NULL && ((en->d == '.') || (en->d >= '0' && en->d <= '9'))) return 1;
-    return 0;
+    if(en != NULL && ((en->d == '.') || (en->d >= '0' && en->d <= '9'))) return true;
+    return false;
 }
 
 // 중위 -> 후위식 변환 후 dll로 리턴하는 함수
@@ -245,7 +284,7 @@ LINK PostFix(LINK exp_head){
             p->prev = post;
             post = p;
     
-            if(isNum(exp)==0){
+            if(!isNum(exp)){
                 LINK s = char_to_list(' ');
                 post->next = s;
                 s->prev = post;

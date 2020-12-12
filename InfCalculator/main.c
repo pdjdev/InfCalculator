@@ -16,10 +16,13 @@ int main(int argc, char* argv[]) {
 
     // argument check
     if (argc == 1 || argc > 3){
-        fprintf(stderr ,"\n%s%s%s\n%s%s%s\n%s\n\n%s\n\n",
+        fprintf(stderr ,"\n%s%s%s\n%s%s%s\n%s%s%s\n%s%s%s\n%s\n%s\n\n%s\n\n",
         "Usage:\t", argv[0], " input",
         "\t", argv[0], " input -log",
+        "\t", argv[0], " -type",
+        "\t", argv[0], " -type -log",
         "Enter the location of text file that contains a math expression.",
+        "(Or you can type directly with -type option)",
         "Caution: Enabling the -log option may slow down the process.");       
         exit(2);
     }
@@ -53,7 +56,7 @@ int main(int argc, char* argv[]) {
         exp_head = GetExpr(argv[inputargv]);
     } else {
         char input[INPUT_SIZE];
-        printf("Input :");
+        printf("Enter an expression: ");
         scanf("%s", input);
         exp_head = StringToLink(input);
     }

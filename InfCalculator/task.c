@@ -60,7 +60,7 @@ char ErrChk(LINK exp_head) {
 
     //중간부분 체크에 쓰일 변수 선언
     bool number = false; // 숫자가 있으면 true
-    char spot = 0;
+    bool haspoint = false; // 소수점 있으면 true
     unsigned long long left_bracket = 0; // 왼괄호
     unsigned long long right_bracket = 0; // 우괄
 
@@ -80,10 +80,10 @@ char ErrChk(LINK exp_head) {
         //숫자 하나에 .이 2개이면 에러 체크, 숫자 나왔는지 확인
         if((exp->d >= '0' && exp->d <= '9') || exp->d == '.'){
             number = true;
-            if(!spot && exp->d == '.') spot = 1;
-            else if(spot && exp->d == '.') {errorcheck = -2; break;}
+            if(!haspoint && exp->d == '.') haspoint = true;
+            else if(haspoint && exp->d == '.') {errorcheck = -2; break;}
         }
-        else spot = 0;
+        else haspoint = false;
         
         //괄호 개수 세기
         if(exp->d == '(') left_bracket ++;
@@ -111,22 +111,26 @@ char ErrChk(LINK exp_head) {
         exp = exp->next;
     }
 
-    // 마지막 글자로 나오면 안되는게 나오면 에러체크 및 괄호 세기 및 숫자 체크
-    if(exp->prev != NULL){
-        if(!(exp->d == '+' || exp->d == '-' || exp->d == '*' || 
-                    exp->d == '(' || exp->d == ')' || (exp->d>='0'&&exp->d<='9'))) errorcheck = -7;
+    // 아직까지 에러체크 안됐을때
+    if (errorcheck>=0) {
 
-        if(!(exp->d == ')' || (exp->d >= '0' && exp->d <= '9'))) errorcheck = -8;
-        if(exp->d == ')') right_bracket++;
-        if(exp->d >= '0' && exp->d<='9') number = true;
+        // 마지막 글자로 나오면 안되는게 나오면 에러체크 및 괄호 세기 및 숫자 체크
+        if(exp->prev != NULL){
+            if(!(exp->d == '+' || exp->d == '-' || exp->d == '*' || 
+                        exp->d == '(' || exp->d == ')' || (exp->d>='0'&&exp->d<='9'))) errorcheck = -7;
+
+            if(!(exp->d == ')' || (exp->d >= '0' && exp->d <= '9'))) errorcheck = -8;
+            if(exp->d == ')') right_bracket++;
+            if(exp->d >= '0' && exp->d<='9') number = true;
+        }
+
+        //숫자가 없으면 에러 체크
+        if(!number) errorcheck = -9;
+
+        //괄호 개수가 같지 않으면 에러 체크
+        if(left_bracket != right_bracket) errorcheck = -10;
+
     }
-
-    //숫자가 없으면 에러 체크
-    if(!number && !(errorcheck<0)) errorcheck = -9;
-
-    //괄호 개수가 같지 않으면 에러 체크
-    if(left_bracket != right_bracket) errorcheck = -10;
-
     return errorcheck;
 }
 

@@ -24,7 +24,6 @@ LINK GetExpr(char *filename) {
         p->prev = exp;
         exp = p;
     }
-    printf("\n");
     fclose(fq);
     return exp_head;
 }

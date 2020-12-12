@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
     printf("Calculating...\n");
     if (printlog) printf("#\tOperand\t\tOperand\t\tOperator\n");
     LINK answer = GetAnswer(exp_head);
-    printf("...Complete!\n");
+    printf("...Complete!\n\n");
    
     //답 출력
     printf("Result : ");

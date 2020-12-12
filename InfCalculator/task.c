@@ -1,3 +1,4 @@
+// filename으로부터 문자열 읽어서 LIST로 변환
 LINK GetExpr(char *filename) {
     FILE *fq = fopen(filename, "r"); 
     if(fq == NULL){
@@ -28,6 +29,24 @@ LINK GetExpr(char *filename) {
     return exp_head;
 }
 
+// string의 문자열을 LIST로 변환
+LINK StringToLink(char* string) {
+    LINK exp_head = char_to_list(string[0]);
+    LINK exp = exp_head;
+    unsigned long long length = 1;
+
+    while(length < strlen(string)) {
+        LINK p = char_to_list(string[length]);
+        exp->next = p;
+        p->prev = exp;
+        exp = p;
+        length++;
+    }
+    
+    return exp_head;
+}
+
+// 공백 제거 ('1   + 2' -> '1+2')
 LINK DelSpace(LINK exp_head) {
     LINK exp = exp_head;
     LINK exp_x;
@@ -53,6 +72,7 @@ LINK DelSpace(LINK exp_head) {
     return exp_head;
 } 
 
+// 오류 체크
 char ErrChk(LINK exp_head) {
     char errorcheck = 0;
     LINK exp = exp_head;
@@ -133,6 +153,7 @@ char ErrChk(LINK exp_head) {
     return errorcheck;
 }
 
+// 오류 메시지 반환
 char* ErrMsg(int errorcode) {
     switch (errorcode)
     {
@@ -172,6 +193,8 @@ char* ErrMsg(int errorcode) {
     }
 }
 
+// 표현식을 프로그램이 해석할 수 있도록 수정
+// ('-5+23(10)4' -> '0.-5.+23.*(10.)*4.')
 LINK FixExpr(LINK exp_head) {
     LINK exp;
     // 맨 앞에 -가 나오는 경우, 맨 앞에 0 붙여주기   ( -   >   0- )
@@ -187,7 +210,7 @@ LINK FixExpr(LINK exp_head) {
     for(; exp!=NULL; exp=exp->next) {
 
         //피연산자를 만났을 때
-        if((exp->d >='0' && exp->d <='9') || exp->d == '.'){
+        if((exp->d >='0' && exp->d <='9') || exp->d == '.') {
 
             // 다음 링크의 글자가 '(' 일 때 * 추가   ex) 2(3-2)  ->  2*(3-2)
             if(exp->next != NULL && exp->next->d == '(') insert(exp,'*');
@@ -264,7 +287,7 @@ bool isNum(LINK exp){
 }
 
 // 중위 -> 후위식 변환 후 dll로 리턴하는 함수
-LINK PostFix(LINK exp_head){
+LINK PostFix(LINK exp_head) {
     
     // 연산자를 비교해줄 스택 생성
     Stack oper_stack;
@@ -277,7 +300,7 @@ LINK PostFix(LINK exp_head){
     LINK post_head = char_to_list('e'); //초기 'e' 노드 생성.. (수정 필요)
     LINK post = post_head;
 
-    for(; exp != NULL; exp = exp->next){
+    for(; exp != NULL; exp = exp->next) {
 
         // (1) 0~9이거나 .이다. (후위수식에) 피연산자 추가
         if((exp->d == '.') || (exp->d >= '0' && exp->d <= '9')){
@@ -297,7 +320,7 @@ LINK PostFix(LINK exp_head){
         }
         
         // (2) 연산자 - ')' 이다.
-        else if(exp->d == ')'){
+        else if(exp->d == ')') {
             while(Top(&oper_stack)->d != '('){  //스택에 있는 '('를 찾기 전까지
                 LINK oper = Pop(&oper_stack);   //스택의 탑을 팝한다.
                 
@@ -323,11 +346,11 @@ LINK PostFix(LINK exp_head){
 
 
         // (3) 연산자 - ')' 제외 모든 연산자.
-        else{
+        else {
             // Stack 안의 탑 연산자와 우선순위 비교.
             // 넣을 연산자가 top보다 우선순위 높으면 그냥 스택에 넣음.
             // 낮으면 계속 pop해서 높을 때까지 맞춤.
-            while(!IsEmpty(&oper_stack) && isPrior(Top(&oper_stack)->d,exp->d)){
+            while(!IsEmpty(&oper_stack) && isPrior(Top(&oper_stack)->d,exp->d)) {
                 LINK oper = Pop(&oper_stack);   //스택의 탑을 팝한다.
                 
                 // 팝한 데이터를 후위표기식 뒤에 붙여준다.
@@ -370,6 +393,7 @@ LINK PostFix(LINK exp_head){
     return post_head->next; //초기에 'e'를 넣엇음 -> next 주소를 반환해야함.
 }
 
+// 공백으로 분리된 후위표기식 LIST를 읽고 계산한 뒤 LIST로 리턴
 LINK GetAnswer(LINK exp_head) {
     Stack exp_stack;
     InitStack(&exp_stack);
@@ -383,54 +407,37 @@ LINK GetAnswer(LINK exp_head) {
 
     while(expr != NULL) {
 
-        //printf("expr: %c\n", expr->d);
-
         //공백이 아닐 경우 (식 또는 숫자일 경우)
         if (expr->d != ' ') {            
             
             // 연산자일 경우
             if (expr->d == '+' || expr->d == '-' || expr->d == '*') {
-
-                //printf("!!!!");   
                 LINK p2 = Pop(&exp_stack); LINK p1 = Pop(&exp_stack);
                 LINK p3 = calculator(p1, p2, expr->d);
-
-                /*
-                printf("p2: "); flist(p2); printf("\n");
-                printf("p1: "); flist(p1); printf("\n");
-                printf("oper: %c\n", expr->d);
-                printf("p3: "); flist(p3); printf("\n");
-                printf("====\n");
-                */
-
                 Push(&exp_stack, p3);
 
             } else { // 피연산자일 경우
 
                 if (adding_item == false) {
+
                     adding_item = true;
                     // 표현식 내에서의 피연산자는 항상 양수이므로 +를 맨처음에 넣기
                     item = char_to_list('+');
                     insert(item, expr->d);
-                    item_input_link = item->next;                
+                    item_input_link = item->next;        
 
                 } else {
                     insert(item_input_link, expr->d);
                     item_input_link = item_input_link->next;
                 }
-            }
-            
-        } else { // 드디어 공백을 만난 경우
-            
+            }           
+
+        } else { // 드디어 공백을 만난 경우       
             // 띄어쓰기 직전 피연산자를 추가했었던 경우
             if (adding_item) {
-
                 adding_item = false;
                 Push(&exp_stack, item);
-
-                //printf("item: "); flist(item); printf("\n");
-            }
-            
+            }       
         }
 
         // 리스트 넘기기

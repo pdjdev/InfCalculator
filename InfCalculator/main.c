@@ -27,33 +27,26 @@ int main(int argc, char* argv[]) {
         exit(2);
     }
 
-    char inputargv = 1;
-
-    //if (argc > 2) {
-        /*
-        if (!strcmp(argv[1], "-log") || !strcmp(argv[1], "--log")) inputargv = 2;
-        else if (!strcmp(argv[2], "-log") || !strcmp(argv[2], "--log")) {}
-        else { printlog = false; }
-        */
+    char inputargc = 1;
 
     for(int i=1; i<argc; i++) {
         if (!strcmp(argv[i], "-type") || !strcmp(argv[i], "--type")) {
-            inputargv = 0;
+            inputargc = 0;
         }
 
         if (!strcmp(argv[i], "-log") || !strcmp(argv[i], "--log")) {
             printlog = true;
             // 인풋이 type가 아닌 경우
-            if (inputargv != 0) {
-                if (i==1) inputargv = 2;
+            if (inputargc != 0) {
+                if (i==1) inputargc = 2;
             }
         }      
     }
 
     LINK exp_head;
 
-    if (inputargv != 0) {
-        exp_head = GetExpr(argv[inputargv]);
+    if (inputargc != 0) {
+        exp_head = GetExpr(argv[inputargc]);
     } else {
         char input[INPUT_SIZE];
         printf("Enter an expression: ");
@@ -77,7 +70,7 @@ int main(int argc, char* argv[]) {
     exp_head = FixExpr(exp_head);
     if (printlog) { printf("Fixed Expression:\n"); print_link(exp_head); printf("\n\n"); }
     exp_head = PostFix(exp_head);
-    if (printlog) { printf("PostFix:\n"); print_link(exp_head); printf("\n\n"); }
+    if (printlog) { printf("Postfix:\n"); print_link(exp_head); printf("\n\n"); }
 
     printf("Calculating...\n");
     if (printlog) printf("#\tOperand\t\tOperand\t\tOperator\n");

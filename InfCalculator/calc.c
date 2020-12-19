@@ -9,7 +9,7 @@ LINK plus(LINK a, LINK b) {
     char now = 0;
     char up = 0;
 
-    if(compare(a,b) == 2){
+    if(compare(a,b) == 2) {
         LINK tmp = a;
         a = b;
         b = tmp;
@@ -68,7 +68,7 @@ LINK plus(LINK a, LINK b) {
 }
 
 
-LINK minus(LINK a, LINK b){
+LINK minus(LINK a, LINK b) {
 
     LINK ans;
     LINK num_copy;
@@ -113,7 +113,7 @@ LINK minus(LINK a, LINK b){
     a = last_link(num1);
     b = last_link(num2);
 
-    while(a!=NULL){
+    while(a!=NULL) {
         char number1 = a->d-'0';
         char number2 = b->d-'0';
         char check = 0;
@@ -175,7 +175,7 @@ LINK multiple(LINK num1, LINK num2) {
 
     mul1 = last_link(num1_int);
     unsigned long long int zero = 0;
-    for(; mul1 != NULL; mul1 = mul1->prev){
+    for(; mul1 != NULL; mul1 = mul1->prev) {
         mul2 = last_link(num2_int);
         char now = (mul1->d-'0') * (mul2->d-'0'); 
         char up = now/10;
@@ -186,7 +186,7 @@ LINK multiple(LINK num1, LINK num2) {
         num_copy = input;
         mul2 = mul2->prev;
 
-        for(; mul2 != NULL; mul2 = mul2->prev){
+        for(; mul2 != NULL; mul2 = mul2->prev) {
             now = (mul1->d-'0') * (mul2->d-'0') + up;
             up = now/10;
             now %= 10;
@@ -202,7 +202,7 @@ LINK multiple(LINK num1, LINK num2) {
         
         if(zero>0){
             zero_link = char_to_list('0');
-            for(unsigned long long i=1; i<zero; i++){
+            for(unsigned long long i=1; i<zero; i++) {
                 insert(zero_link,'0');
             }
             concatenate(zero_link,input);
@@ -210,7 +210,7 @@ LINK multiple(LINK num1, LINK num2) {
         } 
         
         num_copy = last_link(input);
-        while(1){
+        while(1) {
             if(num_copy->prev == NULL || num_copy->d != '0') break;
             LINK save = num_copy->prev;
             del_link(num_copy);
@@ -219,7 +219,7 @@ LINK multiple(LINK num1, LINK num2) {
 
         if(!zero) ans = copy_link(input);
         
-        else{
+        else {
             unsigned long long alen = count(ans);
             unsigned long long blen = count(input);
 
@@ -232,20 +232,20 @@ LINK multiple(LINK num1, LINK num2) {
             num_copy = input;
             now = 0;
             up = 0;
-            for(; num_copy != NULL; num_copy = num_copy->next){
+            for(; num_copy != NULL; num_copy = num_copy->next) {
                 now = num_copy->d-'0' + save->d-'0' +up;
                 up = now/10;
                 now = now%10;
                 save->d = now+'0';
                 save = save->next;
             }
-            for(; up && save != NULL; save = save->next){
+            for(; up && save != NULL; save = save->next) {
                 now = save->d-'0' + up;
                 up = now/10;
                 now = now%10;
                 save->d = now+'0';
             }
-            if(up){
+            if(up) {
                 save = last_link(ans);
                 insert(save,'1');
             }
@@ -261,9 +261,7 @@ LINK multiple(LINK num1, LINK num2) {
         if(positive) ans = char_to_list('+');
         else ans = char_to_list('-');
 
-        for(; num_copy!=NULL; num_copy = num_copy->next){
-            insert(ans,num_copy->d);
-        }
+        for(; num_copy!=NULL; num_copy = num_copy->next) { insert(ans,num_copy->d); }
         free_all(save);
 
         num_copy = last_link(ans);
@@ -280,7 +278,7 @@ LINK multiple(LINK num1, LINK num2) {
             insert(save,'0');
             save = save->next;
         }
-        for(; num_copy!=NULL; num_copy = num_copy->next){
+        for(; num_copy!=NULL; num_copy = num_copy->next) {
             insert(save,num_copy->d);
         }
     }
@@ -290,7 +288,7 @@ LINK multiple(LINK num1, LINK num2) {
     return ans;
 }
 
-LINK calculator(LINK p1, LINK p2, char oper){
+LINK calculator(LINK p1, LINK p2, char oper) {
     LINK p3;
     extern bool printlog;
 

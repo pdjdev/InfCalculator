@@ -199,9 +199,9 @@ LINK FixExpr(LINK exp_head) {
     LINK exp;
     // 맨 앞에 -가 나오는 경우, 맨 앞에 0 붙여주기   ( -   >   0- )
     if(exp_head->next != NULL && exp_head->d == '-'){
-        LINK minus = char_to_list('0');
-        concatenate(minus, exp_head);
-        exp_head = minus;
+        LINK zero = char_to_list('0');
+        concatenate(zero, exp_head);
+        exp_head = zero;
     }
 
     // 중간 수정 파트 //
@@ -233,23 +233,17 @@ LINK FixExpr(LINK exp_head) {
 
         // 우괄호를 만나고, 바로 다음이 좌괄호 또는 피연산자이면 * 추가
         if(exp->next != NULL && exp->d == ')') {
-            if(exp->next->d == '(' || (exp->next->d >='0' && exp->next->d <='9')) {
-                insert(exp,'*');
-            }
+            if(exp->next->d == '(' || (exp->next->d >='0' && exp->next->d <='9')) { insert(exp,'*'); }
         }
         else if(exp->d == '(') { // 좌괄호이고, 다음 문자가 '-' 이면 0 추가
-            if(exp->next!=NULL && exp->next->d == '-') {
-                insert(exp,'0');
-            }
+            if(exp->next!=NULL && exp->next->d == '-') { insert(exp,'0'); }
         }
     }
 
     // 마지막 피연산자에 .이 없었다면 . 추가
     LINK exp_last = last_link(exp_head);
     exp = exp_last;
-    if(!dcpt && exp->d>='0' && exp->d<='9') {
-        insert(exp,'.');
-    }
+    if(!dcpt && exp->d>='0' && exp->d<='9') { insert(exp,'.'); }
 
     return exp_head;
 }
@@ -312,6 +306,7 @@ LINK PostFix(LINK exp_head) {
             p->prev = post;
             post = p;
     
+            // 다음 문자가 피연산자가 아닐 경우
             if(!(exp->next != NULL && ((exp->next->d == '.') || 
                 (exp->next->d >= '0' && exp->next->d <= '9')))){
                 LINK s = char_to_list(' ');
@@ -327,8 +322,7 @@ LINK PostFix(LINK exp_head) {
             while(Top(&oper_stack)->d != '('){  //스택에 있는 '('를 찾기 전까지
                 LINK oper = Pop(&oper_stack);   //스택의 탑을 팝한다.
                 
-                // 팝한 데이터를 후위표기식 뒤에 붙여준다.
-                
+                // 팝한 데이터를 후위표기식 뒤에 붙여준다.    
                 post->next = oper;
                 oper->prev = post;
                 post = oper;
@@ -403,10 +397,10 @@ LINK GetAnswer(LINK exp_head) {
     //InitStack(&oper_stack);
 
     LINK expr = exp_head;
-    LINK item;
-    LINK item_input_link;
+    LINK operand_head;
+    LINK operand;
 
-    bool adding_item = false;
+    bool adding_operand = false;
 
     while(expr != NULL) {
 
@@ -421,25 +415,25 @@ LINK GetAnswer(LINK exp_head) {
 
             } else { // 피연산자일 경우
 
-                if (adding_item == false) {
+                if (adding_operand == false) {
 
-                    adding_item = true;
+                    adding_operand = true;
                     // 표현식 내에서의 피연산자는 항상 양수이므로 +를 맨처음에 넣기
-                    item = char_to_list('+');
-                    insert(item, expr->d);
-                    item_input_link = item->next;        
+                    operand_head = char_to_list('+');
+                    insert(operand_head, expr->d);
+                    operand = operand_head->next;        
 
                 } else {
-                    insert(item_input_link, expr->d);
-                    item_input_link = item_input_link->next;
+                    insert(operand, expr->d);
+                    operand = operand->next;
                 }
             }           
 
         } else { // 드디어 공백을 만난 경우       
             // 띄어쓰기 직전 피연산자를 추가했었던 경우
-            if (adding_item) {
-                adding_item = false;
-                Push(&exp_stack, item);
+            if (adding_operand) {
+                adding_operand = false;
+                Push(&exp_stack, operand_head);
             }       
         }
 

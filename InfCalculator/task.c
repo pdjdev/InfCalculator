@@ -272,16 +272,6 @@ bool isPrior(DATA d1, DATA d2) {
     return (GetPriority(d1, true) <= GetPriority(d2, false));
 }
 
-// 피연산자인지 판별
-/*
-bool isNum(LINK exp){
-    LINK e = exp;
-    LINK en = e->next;
-    if(en != NULL && ((en->d == '.') || (en->d >= '0' && en->d <= '9'))) return true;
-    return false;
-}
-*/
-
 // 중위 -> 후위식 변환 후 dll로 리턴하는 함수
 LINK PostFix(LINK exp_head) {
     

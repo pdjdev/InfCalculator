@@ -1,3 +1,4 @@
+// 더하기
 LINK plus(LINK a, LINK b) {
 
     LINK ans;
@@ -67,7 +68,7 @@ LINK plus(LINK a, LINK b) {
     return ans;
 }
 
-
+// 빼기
 LINK minus(LINK a, LINK b) {
 
     LINK ans;
@@ -144,7 +145,7 @@ LINK minus(LINK a, LINK b) {
     return ans;
 }
 
-
+// 곱하기
 LINK multiple(LINK num1, LINK num2) {
 
     LINK ans; 
@@ -288,6 +289,7 @@ LINK multiple(LINK num1, LINK num2) {
     return ans;
 }
 
+// 계산
 LINK calculator(LINK p1, LINK p2, char oper) {
     LINK p3;
     extern bool printlog;

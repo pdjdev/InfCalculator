@@ -8,8 +8,8 @@ LINK GetExpr(char *filename) {
 
     char input = getc(fq);
 
-    if(input=='\n') {
-        printf("Error: Input file is empty or starts with a newline.\n");
+    if(input==EOF) {
+        printf("Error: Input file is empty.\n");
         exit(0);
     }
 
@@ -19,7 +19,7 @@ LINK GetExpr(char *filename) {
     //두번째 글자부터 입력 및 링크드리스트 넣기
     while(input = getc(fq)) {
         // 개행문자 or end of file
-        if(input == '\n' || input == EOF) break;
+        if(input == EOF) break;
         LINK p = char_to_list(input);
         exp->next = p;
         p->prev = exp;
@@ -154,7 +154,7 @@ char ErrChk(LINK exp_head) {
 }
 
 // 오류 메시지 반환
-char* ErrMsg(int errorcode) {
+char* ErrMsg(char errorcode) {
     switch (errorcode)
     {
     case -1: // 맨 앞에 올바르지 않은 문자열이 있음
@@ -255,7 +255,7 @@ LINK FixExpr(LINK exp_head) {
 }
 
 // 연산자 우선순위 리턴
-char GetPriority(DATA d, int inStack) {
+char GetPriority(DATA d, bool inStack) {
     unsigned int priority = -1;
     switch(d){
         case '(' :
@@ -275,16 +275,18 @@ char GetPriority(DATA d, int inStack) {
 
 // 두 값중 우선순위 높음여부 비교
 bool isPrior(DATA d1, DATA d2) {
-    return (GetPriority(d1, 1) <= GetPriority(d2, 0));
+    return (GetPriority(d1, true) <= GetPriority(d2, false));
 }
 
 // 피연산자인지 판별
+/*
 bool isNum(LINK exp){
     LINK e = exp;
     LINK en = e->next;
     if(en != NULL && ((en->d == '.') || (en->d >= '0' && en->d <= '9'))) return true;
     return false;
 }
+*/
 
 // 중위 -> 후위식 변환 후 dll로 리턴하는 함수
 LINK PostFix(LINK exp_head) {
@@ -310,7 +312,8 @@ LINK PostFix(LINK exp_head) {
             p->prev = post;
             post = p;
     
-            if(!isNum(exp)){
+            if(!(exp->next != NULL && ((exp->next->d == '.') || 
+                (exp->next->d >= '0' && exp->next->d <= '9')))){
                 LINK s = char_to_list(' ');
                 post->next = s;
                 s->prev = post;

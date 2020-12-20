@@ -27,13 +27,15 @@ int main(int argc, char* argv[]) {
         exit(2);
     }
 
+    // input의 명령인자 위치
     char inputargc = 1;
 
     for(int i=1; i<argc; i++) {
+        // -type 명령인자 확인시
         if (!strcmp(argv[i], "-type") || !strcmp(argv[i], "--type")) {
             inputargc = 0;
         }
-
+        // -log 명령인자 확인시
         if (!strcmp(argv[i], "-log") || !strcmp(argv[i], "--log")) {
             printlog = true;
             // 인풋이 type가 아닌 경우
@@ -50,10 +52,11 @@ int main(int argc, char* argv[]) {
     } else {
         char input[INPUT_SIZE];
         printf("Enter an expression: ");
-        scanf("%[^\n]s", input);
+        scanf("%[^\n]s", input);        // 줄바꿈 감지될 때까지 계속 scan
         exp_head = StringToLink(input);
     }
     
+    //공백 제거
     exp_head = DelSpace(exp_head);
 
     //에러가 체크되어 있으면 오류문구 출력 후 종료
@@ -67,14 +70,16 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    exp_head = FixExpr(exp_head);
-    if (printlog) { printf("Fixed Expression:\n"); print_link(exp_head); printf("\n\n"); }
-    exp_head = PostFix(exp_head);
-    if (printlog) { printf("Postfix:\n"); print_link(exp_head); printf("\n\n"); }
+    
+    exp_head = FixExpr(exp_head);   // 중위식 수정
+    if (printlog) { printf("Fixed Expression:\n"); print_link(exp_head); printf("\n\n"); } // 로그출력
+
+    exp_head = PostFix(exp_head); //후위식 변환
+    if (printlog) { printf("Postfix:\n"); print_link(exp_head); printf("\n\n"); } // 로그출력
 
     printf("Calculating...\n");
-    if (printlog) printf("#\tOperand\t\tOperand\t\tOperator\n");
-    LINK answer = GetAnswer(exp_head);
+    if (printlog) printf("#\tOperand\t\tOperand\t\tOperator\n"); // 계산로그 - 열 제목 출력
+    LINK answer = GetAnswer(exp_head); // 답 계산
     printf("...Complete!\n\n");
    
     //답 출력
@@ -82,6 +87,7 @@ int main(int argc, char* argv[]) {
     print_link(answer);
     printf("\n");
 
+    // 메모리 해제
     free_all(answer);
     free_all(exp_head);
 }

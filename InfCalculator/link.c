@@ -21,7 +21,7 @@ LINK char_to_list(char s) {
 
 // DLL의 길이 구하기
 unsigned long long count(LINK head) {
-    unsigned long long c = 0;
+    unsigned long long c = 0; //부호가 없는 8 바이트의 정수형 변수 
     while(head != NULL) {
         head = head->next;
         c++;

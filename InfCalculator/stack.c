@@ -29,7 +29,9 @@ void Push(Stack *stack, LINK head){
 LINK Pop(Stack *stack){
     Node *now;
     LINK re;
-    if(IsEmpty(stack)) return NULL; //
+    //스택이 비었으면 NULL반환
+    //비어있지 않으면 now의 값을 빈환
+    if(IsEmpty(stack)) return NULL;
     now = stack->top;
     re = now->data;
 
@@ -37,15 +39,16 @@ LINK Pop(Stack *stack){
     return re;
 }
 
-//
+//스택 탑의 데이터를 반환
 LINK Top(Stack *stack){
     return stack->top->data;
 }
 
-//
+//스택을 해제
 void stack_reset(Stack *stack){
     Node *now = stack->top;
-    while(now != NULL){ //
+    //now가 가리키는 곳이 NULL이 될때까지 노드를 할당해제
+    while(now != NULL){
         Node *next = now->next;
         free(now);
         now = next;

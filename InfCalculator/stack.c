@@ -1,6 +1,6 @@
 #define InitStack(STACK)    (STACK)->top = NULL
 
-typedef struct Node{
+typedef struct Node{ //
     LINK data;
     struct Node *next;
 }Node;

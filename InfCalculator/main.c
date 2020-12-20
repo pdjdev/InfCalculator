@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
     } else {
         char input[INPUT_SIZE];
         printf("Enter an expression: ");
-        scanf("%s", input);
+        scanf("%[^\n]s", input);
         exp_head = StringToLink(input);
     }
     

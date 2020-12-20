@@ -1,4 +1,3 @@
-// 더하기
 LINK plus(LINK a, LINK b) {
 
     LINK ans;
@@ -27,16 +26,18 @@ LINK plus(LINK a, LINK b) {
     a = num2; num2 = char_to_list('0'); concatenate(num2, a);
 
     Downzero_fill(num1,num2);
-
-    a = last_link(num1);
-    b = num2;
-    for(; a->d != '.'; a=a->prev) point_count++; del_link(a);
-    for(; b->d != '.'; b=b->next); del_link(b);
  
     a = last_link(num1);
     b = last_link(num2);
 
     while(a!=NULL){
+
+        if(a->d == '.') {
+            a = a->prev;
+            b = b->prev;
+            continue;
+        }
+
         char number1 = a->d-'0';
         char number2 = b->d-'0';
 
@@ -52,10 +53,6 @@ LINK plus(LINK a, LINK b) {
 
     free_all(num1); free_all(num2);
 
-    a = last_link(ans);
-    while(point_count--) a = a->prev;
-    insert(a,'.');
-
     zero_erase(ans);
 
     a = ans;
@@ -68,7 +65,7 @@ LINK plus(LINK a, LINK b) {
     return ans;
 }
 
-// 빼기
+
 LINK minus(LINK a, LINK b) {
 
     LINK ans;
@@ -145,13 +142,15 @@ LINK minus(LINK a, LINK b) {
     return ans;
 }
 
-// 곱하기
+
 LINK multiple(LINK num1, LINK num2) {
 
     LINK ans; 
     LINK num_copy;
     LINK num1_last = last_link(num1);
     LINK num2_last = last_link(num2);
+    LINK t1 = copy_link(num1);
+    LINK t2 = copy_link(num2);
     LINK num1_int = copy_link(num1->next);
     LINK num2_int = copy_link(num2->next);
     LINK mul1;
@@ -188,6 +187,7 @@ LINK multiple(LINK num1, LINK num2) {
         mul2 = mul2->prev;
 
         for(; mul2 != NULL; mul2 = mul2->prev) {
+            if(mul2->d == '.') {continue;}
             now = (mul1->d-'0') * (mul2->d-'0') + up;
             up = now/10;
             now %= 10;
@@ -264,24 +264,63 @@ LINK multiple(LINK num1, LINK num2) {
 
         for(; num_copy!=NULL; num_copy = num_copy->next) { insert(ans,num_copy->d); }
         free_all(save);
+        
+        LINK t3 = last_link(ans);
+        LINK tl1 = last_link(t1);
+        LINK tl2 = last_link(t2);
 
-        num_copy = last_link(ans);
-        while(point--) num_copy = num_copy->prev;
-        insert(num_copy, '.');
+        while(tl1 != NULL && tl1->d != '.'){
+            t3 = t3->prev;
+            tl1 = tl1->prev;
+        }
+        while(tl2 != NULL && tl2->d != '.'){
+            t3 = t3->prev;
+            tl2 = tl2->prev;
+        }
+
+        insert(t3, '.');
+        
     } else {
         num_copy = ans;
-        if(positive) ans = char_to_list('+');
-        else ans = char_to_list('-');
-        save = ans;        
-        insert(save,'0'); save = save->next; insert(save,'.'); save = save->next;
-        point-=anslen;
-        while(point--){
-            insert(save,'0');
-            save = save->next;
+        save = ans;
+        
+        ans = char_to_list('0');
+        for(; num_copy!=NULL; num_copy = num_copy->next) { insert(ans,num_copy->d); }
+        free_all(save);
+        num_copy = ans->next;
+        num_copy->prev = NULL;
+        ans->next = NULL;
+        ans = num_copy;
+
+        LINK t3 = last_link(ans);
+        LINK tl1 = last_link(t1);
+        LINK tl2 = last_link(t2);
+
+        while(tl1 != NULL && tl1->d != '.'){
+            if(t3->prev == NULL){
+                LINK z = char_to_list('0');
+                z->next = t3;
+                t3->prev = z;
+                t3 = z;
+            }
+            else t3 = t3->prev;
+            tl1 = tl1->prev;
         }
-        for(; num_copy!=NULL; num_copy = num_copy->next) {
-            insert(save,num_copy->d);
+        while(tl2 != NULL && tl2->d != '.'){
+            if(t3->prev == NULL){
+                LINK z = char_to_list('0');
+                z->next = t3;
+                t3->prev = z;
+                t3 = z;
+            }
+            else t3 = t3->prev;
+            tl2 = tl2->prev;
         }
+        insert(t3, '.');
+
+        LINK sign;
+        if(positive) {sign = char_to_list('+'); concatenate(sign, t3); ans = sign;}
+        else {sign = char_to_list('-'); concatenate(sign, t3); ans = sign;}
     }
     zero_erase(ans);
     free_all(num1);     free_all(num2);
@@ -289,7 +328,6 @@ LINK multiple(LINK num1, LINK num2) {
     return ans;
 }
 
-// 계산
 LINK calculator(LINK p1, LINK p2, char oper) {
     LINK p3;
     extern bool printlog;
@@ -310,3 +348,4 @@ LINK calculator(LINK p1, LINK p2, char oper) {
     if(oper == '*') p3 = multiple(p1,p2);
     return p3;
 }
+
